@@ -134,4 +134,8 @@ public class DirectedGraph {
 	public boolean containsVertex(String vertexName) {
 		return vertices.containsKey(vertexName);
 	}
+		
+	public int getVertexCount() {
+    	return vertices.size();
+    }
 }
