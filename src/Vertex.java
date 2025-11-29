@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class Vertex {
 	private String name;

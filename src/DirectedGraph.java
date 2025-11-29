@@ -1,8 +1,4 @@
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 public class DirectedGraph {
 	private HashMap<String, Vertex> vertices;
@@ -21,12 +17,12 @@ public class DirectedGraph {
 		}
 		else
 		{
-			if (vertices.get(source) == null) {
+			if (vertices.get(source) == null) { // Kaynak düğüm yoksa oluştur
 				source_v = new Vertex(source);
 				vertices.put(source, source_v);
 			}
 
-			if (vertices.get(destination) == null) {
+			if (vertices.get(destination) == null) { // Hedef düğüm yoksa oluştur
 				destination_v = new Vertex(destination);
 				vertices.put(destination, destination_v);
 			}
