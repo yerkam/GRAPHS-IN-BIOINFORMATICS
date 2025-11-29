@@ -130,4 +130,9 @@ public class DirectedGraph {
 		
 		return traversalOrder;
 	} // end getDepthFirstTraversal
-}
+	
+	public int getVertexCount() {
+    return vertices.size();
+    }
+
+ }
