@@ -95,6 +95,10 @@ public class Main {
                     case 6:
                         System.out.println("Please specify the origin protein ID for traversal: ");
                         input = System.console().readLine();
+                        if(!graph.containsVertex(input)) {
+                            System.out.println("Protein ID not found in the graph.");
+                            break;
+                        }
                         String inputBFSorDFS = null;
                         System.out.println("Please choose traversal method (BFS/DFS): ");
                         inputBFSorDFS = System.console().readLine();

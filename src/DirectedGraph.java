@@ -130,4 +130,8 @@ public class DirectedGraph {
 		
 		return traversalOrder;
 	} // end getDepthFirstTraversal
+
+	public boolean containsVertex(String vertexName) {
+		return vertices.containsKey(vertexName);
+	}
 }
