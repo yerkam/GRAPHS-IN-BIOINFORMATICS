@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.List;
+import java.util.Queue;
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -92,7 +93,24 @@ public class Main {
                         System.out.println("Feature not implemented yet.");
                         break;
                     case 6:
-                        System.out.println("Feature not implemented yet.");
+                        System.out.println("Please specify the origin protein ID for traversal: ");
+                        input = System.console().readLine();
+                        String inputBFSorDFS = null;
+                        System.out.println("Please choose traversal method (BFS/DFS): ");
+                        inputBFSorDFS = System.console().readLine();
+                        inputBFSorDFS = inputBFSorDFS.toLowerCase();
+                        while(!inputBFSorDFS.equals("bfs") && !inputBFSorDFS.equals("dfs")) {
+                            System.out.println("Invalid input. Please enter BFS or DFS: ");
+                            inputBFSorDFS = System.console().readLine();
+                            inputBFSorDFS = inputBFSorDFS.toLowerCase();
+                        }
+                        if(inputBFSorDFS.equals("bfs")) {
+                            Queue<String> bfsResult = graph.getBreadthFirstTraversal(input);
+                            System.out.println("Breadth-First Traversal Order: " + bfsResult);
+                        } else {
+                            Queue<String> dfsResult = graph.getDepthFirstTraversal(input);
+                            System.out.println("Depth-First Traversal Order: " + dfsResult);
+                        }
                         break;
                     case 7:
                         System.out.println("Exiting...");
