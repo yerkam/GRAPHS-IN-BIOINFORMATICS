@@ -138,4 +138,113 @@ public class DirectedGraph {
 	public int getVertexCount() {
     	return vertices.size();
     }
+	
+
+public Stack<String> getCheapestPath(String origin, String end) {
+    
+	
+	resetVertices();
+    boolean done = false;
+    
+    // Priority queue to store entries with vertex and cost
+    PriorityQueue<EntryPQ> priorityQueue = new PriorityQueue<>(
+        (a, b) -> Double.compare(a.cost, b.cost)
+    );
+    
+    Vertex originVertex = vertices.get(origin);
+    Vertex endVertex = vertices.get(end);
+    
+    if (originVertex == null || endVertex == null) {
+        return new Stack<>(); // Return empty stack if vertices don't exist
+    }
+    
+    // Add origin vertex to priority queue with cost 0
+    priorityQueue.add(new EntryPQ(originVertex, 0, null));
+    
+    while (!done && !priorityQueue.isEmpty()) {
+        EntryPQ frontEntry = priorityQueue.remove();
+        Vertex frontVertex = frontEntry.vertex;
+        
+        if (!frontVertex.isVisited()) {
+            // Mark as visited
+            frontVertex.visit();
+            
+            // Set the cost and predecessor
+            frontVertex.setCost(frontEntry.cost);
+            frontVertex.setParent(frontEntry.predecessor);
+            
+            // Check if we reached the destination
+            if (frontVertex.getName().equals(end)) {
+                done = true;
+            } else {
+                // Add neighbors to priority queue
+                Iterator<Vertex> neighbors = frontVertex.getNeighborIterator();
+                while (neighbors.hasNext()) {
+                    Vertex nextNeighbor = neighbors.next();
+                    
+                    if (!nextNeighbor.isVisited()) {
+                        // Get the edge weight
+                        double weightOfEdgeToNeighbor = getEdgeWeight(frontVertex, nextNeighbor);
+                        double nextCost = frontVertex.getCost() + weightOfEdgeToNeighbor;
+                        
+                        priorityQueue.add(new EntryPQ(nextNeighbor, nextCost, frontVertex));
+                    }
+                }
+            }
+        }
+    }
+    
+    // Build path from end to origin using predecessors(bir başkasına işaret eden anlamında *enes* parrent anlamında kullnaıyoruz burda)
+    Stack<String> path = new Stack<>();
+    
+    if (done) {
+        Vertex current = endVertex;
+        while (current != null) {
+            path.push(current.getName());
+            current = current.getParent();
+        }
+    }
+    
+    return path;
 }
+
+private double getEdgeWeight(Vertex source, Vertex destination) {
+    for (Edge edge : source.getEdges()) {
+        if (edge.getDestination().equals(destination)) {
+            return 1000 - edge.getWeight(); //  most confidentı bulmak için chepast pathta 1000 den çıkarınca küçük değerler most confident olmuş oldu.  
+        }
+    }
+    return Double.MAX_VALUE;
+}
+
+// Inner class for priority queue entries
+private class EntryPQ {
+    Vertex vertex;
+    double cost;
+    Vertex predecessor;
+    
+    public EntryPQ(Vertex vertex, double cost, Vertex predecessor) {
+        this.vertex = vertex;
+        this.cost = cost;
+        this.predecessor = predecessor;
+    }
+}
+
+public int getEdgeCount() {
+    int totalEdges = 0;
+    for (Vertex v : vertices.values()) {
+        totalEdges += v.getEdges().size();
+    }
+    return totalEdges;
+}
+
+// 2. Average Degree (out-degree için)
+public double getAverageDegree() {
+    if (vertices.isEmpty()) {
+        return 0.0;
+    }
+    return (double) getEdgeCount() / vertices.size();
+}
+}
+
+
