@@ -2,6 +2,7 @@ import java.util.*;
 
 public class DirectedGraph {
 	private HashMap<String, Vertex> vertices;
+	private int edgeCount;
 
 	public DirectedGraph() {
 		this.vertices = new HashMap<>();
@@ -30,6 +31,7 @@ public class DirectedGraph {
 			Edge edge = new Edge(source_v, destination_v, weight);
 			source_v.addEdge(edge);
 		} 
+		edgeCount++;
 	}
 
 	public void print() {
@@ -61,6 +63,11 @@ public class DirectedGraph {
 			v.setCost(0);
 			v.setParent(null);
 		}
+	}
+
+	public void clear() {
+		vertices.clear();
+		edgeCount = 0;
 	}
 
 	public Queue<String> getBreadthFirstTraversal(String origin)
@@ -138,7 +145,7 @@ public class DirectedGraph {
 	public int getVertexCount() {
     	return vertices.size();
     }
-	
+
 
 public Stack<String> getCheapestPath(String origin, String end) {
     
@@ -206,6 +213,7 @@ public Stack<String> getCheapestPath(String origin, String end) {
     }
     
     return path;
+	
 }
 
 private double getEdgeWeight(Vertex source, Vertex destination) {
@@ -245,6 +253,7 @@ public double getAverageDegree() {
     }
     return (double) getEdgeCount() / vertices.size();
 }
+
 }
 
 

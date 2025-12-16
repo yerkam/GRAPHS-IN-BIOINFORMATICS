@@ -6,6 +6,8 @@ import java.util.Stack;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        printPerformanceTest();
+
         System.out.println("Please enter a threshold value: ");
         String input = System.console().readLine();
         while (input.isEmpty() || !input.matches("\\d+")) { // Geçersiz threshold kontrolü
@@ -17,8 +19,8 @@ public class Main {
 
         DirectedGraph graph = null;
         List<String[]> proteinInfoList = null;
-        int option = -1;
-        while (option != 7) {
+        int option = -1;  
+        while   (option != 7) {
             System.out.println("1 - Load graph from files");
             System.out.println("2 - Search for protein by protein ID");
             System.out.println("3 - Check if two proteins have an interaction");
@@ -38,8 +40,9 @@ public class Main {
                                                                                            // seçenek 1 değilse
                 System.out.println("Please load the graph first by selecting option 1.");
 
-            } else {
-                switch (option) {
+            }                 
+            else{ // Graph yüklendiyse veya seçenek 1 ise
+                switch(option) {
                     case 1:
                         Reader reader = new Reader("9606.protein.links.v12.0.txt", "9606.protein.info.v12.0.txt");
                         graph = reader.loadGraph(threshold);
@@ -164,6 +167,60 @@ public class Main {
             System.out.println(
                     "-----------------------------------------------------------------------------------------------------");
         }
+    // end main
 
+    public static void printPerformanceTest() throws IOException {
+        int threshold = 500;
+        DirectedGraph graph = null;
+        Reader reader = new Reader("9606.protein.links.v12.0.txt", "9606.protein.info.v12.0.txt");
+        System.out.println("Threshold , Vertex Count , Edge Count , Load Time (ms)");
+        
+        long startTime = System.nanoTime();
+        graph = reader.loadGraph(threshold);
+        long endTime = System.nanoTime();
+        long loadTime = (endTime - startTime) / 1000000; 
+        System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
+        graph.clear();
+
+        threshold = 700;
+        startTime = System.nanoTime();
+        graph = reader.loadGraph(threshold);
+        endTime = System.nanoTime();
+        loadTime = (endTime - startTime) / 1000000; 
+        System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
+        graph.clear();
+
+        threshold = 900;
+        startTime = System.nanoTime();
+        graph = reader.loadGraph(threshold);
+        endTime = System.nanoTime();
+        loadTime = (endTime - startTime) / 1000000; 
+        System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
+        graph.clear();
+        
+        threshold = 950;
+        startTime = System.nanoTime();
+        graph = reader.loadGraph(threshold);
+        endTime = System.nanoTime();
+        loadTime = (endTime - startTime) / 1000000; 
+        System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
+        graph.clear();
+
+        threshold = 980;
+        startTime = System.nanoTime();
+        graph = reader.loadGraph(threshold);
+        endTime = System.nanoTime();
+        loadTime = (endTime - startTime) / 1000000; 
+        System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
+        graph.clear();
+
+        threshold = 999;
+        startTime = System.nanoTime();
+        graph = reader.loadGraph(threshold);
+        endTime = System.nanoTime();
+        loadTime = (endTime - startTime) / 1000000; 
+        System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
+        graph.clear();
     }
+    
 }
