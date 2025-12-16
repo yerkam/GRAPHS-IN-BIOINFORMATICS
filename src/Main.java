@@ -167,7 +167,7 @@ public class Main {
             System.out.println(
                     "-----------------------------------------------------------------------------------------------------");
         }
-    // end main
+    /* end main */
 
     public static void printPerformanceTest() throws IOException {
         int threshold = 500;
