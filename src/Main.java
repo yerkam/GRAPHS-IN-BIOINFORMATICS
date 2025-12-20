@@ -19,8 +19,8 @@ public class Main {
 
         DirectedGraph graph = null;
         List<String[]> proteinInfoList = null;
-        int option = -1;  
-        while   (option != 7) {
+        int option = -1;
+        while (option != 7) {
             System.out.println("1 - Load graph from files");
             System.out.println("2 - Search for protein by protein ID");
             System.out.println("3 - Check if two proteins have an interaction");
@@ -40,9 +40,8 @@ public class Main {
                                                                                            // seçenek 1 değilse
                 System.out.println("Please load the graph first by selecting option 1.");
 
-            }                 
-            else{ // Graph yüklendiyse veya seçenek 1 ise
-                switch(option) {
+            } else { // Graph yüklendiyse veya seçenek 1 ise
+                switch (option) {
                     case 1:
                         Reader reader = new Reader("9606.protein.links.v12.0.txt", "9606.protein.info.v12.0.txt");
                         graph = reader.loadGraph(threshold);
@@ -129,8 +128,33 @@ public class Main {
                             System.out.println();
                         }
                         break;
+                    
                     case 5:
-                        System.out.println("Feature not implemented yet.");
+                        System.out.println("Calculating graph metrics...");
+                        System.out.println();
+
+                        int vertexCount = graph.getVertexCount();
+                        System.out.println("Vertex Count: " + vertexCount);
+                        Thread.sleep(300);
+
+                        int edgeCount = graph.getEdgeCount();
+                        System.out.println("Edge Count: " + edgeCount);
+                        Thread.sleep(300);
+
+                        double avgDegree = graph.getAverageDegree();
+                        System.out.printf("Average Degree: %.2f%n", avgDegree);
+                        Thread.sleep(300);
+
+                        System.out.println("Calculating diameter (this may take a while for large graphs)...");
+                        int diameter = graph.getDiameter();
+                        System.out.println("Diameter: " + diameter);
+                        Thread.sleep(300);
+
+                        double reciprocity = graph.getReciprocity();
+                        System.out.printf("Reciprocity: %.4f%n", reciprocity);
+                        System.out.println();
+
+                        System.out.println("Graph metrics calculation completed.");
                         break;
                     case 6:
                         System.out.println("Please specify the origin protein ID for traversal: ");
@@ -167,18 +191,18 @@ public class Main {
             System.out.println(
                     "-----------------------------------------------------------------------------------------------------");
         }
-    /* end main */
+        /* end main */}
 
     public static void printPerformanceTest() throws IOException {
         int threshold = 500;
         DirectedGraph graph = null;
         Reader reader = new Reader("9606.protein.links.v12.0.txt", "9606.protein.info.v12.0.txt");
         System.out.println("Threshold , Vertex Count , Edge Count , Load Time (ms)");
-        
+
         long startTime = System.nanoTime();
         graph = reader.loadGraph(threshold);
         long endTime = System.nanoTime();
-        long loadTime = (endTime - startTime) / 1000000; 
+        long loadTime = (endTime - startTime) / 1000000;
         System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
         graph.clear();
 
@@ -186,7 +210,7 @@ public class Main {
         startTime = System.nanoTime();
         graph = reader.loadGraph(threshold);
         endTime = System.nanoTime();
-        loadTime = (endTime - startTime) / 1000000; 
+        loadTime = (endTime - startTime) / 1000000;
         System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
         graph.clear();
 
@@ -194,15 +218,15 @@ public class Main {
         startTime = System.nanoTime();
         graph = reader.loadGraph(threshold);
         endTime = System.nanoTime();
-        loadTime = (endTime - startTime) / 1000000; 
+        loadTime = (endTime - startTime) / 1000000;
         System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
         graph.clear();
-        
+
         threshold = 950;
         startTime = System.nanoTime();
         graph = reader.loadGraph(threshold);
         endTime = System.nanoTime();
-        loadTime = (endTime - startTime) / 1000000; 
+        loadTime = (endTime - startTime) / 1000000;
         System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
         graph.clear();
 
@@ -210,7 +234,7 @@ public class Main {
         startTime = System.nanoTime();
         graph = reader.loadGraph(threshold);
         endTime = System.nanoTime();
-        loadTime = (endTime - startTime) / 1000000; 
+        loadTime = (endTime - startTime) / 1000000;
         System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
         graph.clear();
 
@@ -218,9 +242,9 @@ public class Main {
         startTime = System.nanoTime();
         graph = reader.loadGraph(threshold);
         endTime = System.nanoTime();
-        loadTime = (endTime - startTime) / 1000000; 
+        loadTime = (endTime - startTime) / 1000000;
         System.out.println(threshold + " , " + graph.size() + " , " + graph.getEdgeCount() + " , " + loadTime);
         graph.clear();
     }
-    
+
 }

@@ -18,12 +18,12 @@ public class DirectedGraph {
 		}
 		else
 		{
-			if (vertices.get(source) == null) { // Kaynak düğüm yoksa oluştur
+			if (vertices.get(source) == null) {
 				source_v = new Vertex(source);
 				vertices.put(source, source_v);
 			}
 
-			if (vertices.get(destination) == null) { // Hedef düğüm yoksa oluştur
+			if (vertices.get(destination) == null) {
 				destination_v = new Vertex(destination);
 				vertices.put(destination, destination_v);
 			}
@@ -73,14 +73,14 @@ public class DirectedGraph {
 	public Queue<String> getBreadthFirstTraversal(String origin)
 	{
 		resetVertices();
-		Queue<String> traversalOrder = new LinkedList<>(); // Queue of vertex labels
-		Queue<Vertex> vertexQueue = new LinkedList<>(); // Queue of Vertex objects
+		Queue<String> traversalOrder = new LinkedList<>();
+		Queue<Vertex> vertexQueue = new LinkedList<>();
 
 		Vertex originVertex = vertices.get(origin);
 		originVertex.visit();
 
-		traversalOrder.add(origin);    // Enqueue vertex label
-		vertexQueue.add(originVertex); // Enqueue vertex
+		traversalOrder.add(origin);
+		vertexQueue.add(originVertex);
 
 		while (!vertexQueue.isEmpty())
 		{
@@ -95,12 +95,12 @@ public class DirectedGraph {
 					nextNeighbor.visit();
 					traversalOrder.add(nextNeighbor.getName());
 					vertexQueue.add(nextNeighbor);
-				} // end if
-			} // end while
-		} // end while
+				}
+			}
+		}
 
 		return traversalOrder;
-	} // end getBreadthFirstTraversal
+	}
 
 	public Queue<String> getDepthFirstTraversal(String origin)
 	{
@@ -136,7 +136,7 @@ public class DirectedGraph {
 		} 
 		
 		return traversalOrder;
-	} // end getDepthFirstTraversal
+	}
 
 	public boolean containsVertex(String vertexName) {
 		return vertices.containsKey(vertexName);
@@ -147,113 +147,196 @@ public class DirectedGraph {
     }
 
 
-public Stack<String> getCheapestPath(String origin, String end) {
-    
-	
-	resetVertices();
-    boolean done = false;
-    
-    // Priority queue to store entries with vertex and cost
-    PriorityQueue<EntryPQ> priorityQueue = new PriorityQueue<>(
-        (a, b) -> Double.compare(a.cost, b.cost)
-    );
-    
-    Vertex originVertex = vertices.get(origin);
-    Vertex endVertex = vertices.get(end);
-    
-    if (originVertex == null || endVertex == null) {
-        return new Stack<>(); // Return empty stack if vertices don't exist
-    }
-    
-    // Add origin vertex to priority queue with cost 0
-    priorityQueue.add(new EntryPQ(originVertex, 0, null));
-    
-    while (!done && !priorityQueue.isEmpty()) {
-        EntryPQ frontEntry = priorityQueue.remove();
-        Vertex frontVertex = frontEntry.vertex;
-        
-        if (!frontVertex.isVisited()) {
-            // Mark as visited
-            frontVertex.visit();
-            
-            // Set the cost and predecessor
-            frontVertex.setCost(frontEntry.cost);
-            frontVertex.setParent(frontEntry.predecessor);
-            
-            // Check if we reached the destination
-            if (frontVertex.getName().equals(end)) {
-                done = true;
-            } else {
-                // Add neighbors to priority queue
-                Iterator<Vertex> neighbors = frontVertex.getNeighborIterator();
-                while (neighbors.hasNext()) {
-                    Vertex nextNeighbor = neighbors.next();
-                    
-                    if (!nextNeighbor.isVisited()) {
-                        // Get the edge weight
-                        double weightOfEdgeToNeighbor = getEdgeWeight(frontVertex, nextNeighbor);
-                        double nextCost = frontVertex.getCost() + weightOfEdgeToNeighbor;
-                        
-                        priorityQueue.add(new EntryPQ(nextNeighbor, nextCost, frontVertex));
-                    }
-                }
-            }
-        }
-    }
-    
-    // Build path from end to origin using predecessors(bir başkasına işaret eden anlamında *enes* parrent anlamında kullnaıyoruz burda)
-    Stack<String> path = new Stack<>();
-    
-    if (done) {
-        Vertex current = endVertex;
-        while (current != null) {
-            path.push(current.getName());
-            current = current.getParent();
-        }
-    }
-    
-    return path;
-	
+	public Stack<String> getCheapestPath(String origin, String end) {
+		resetVertices();
+		
+		Vertex originVertex = vertices.get(origin);
+		Vertex endVertex = vertices.get(end);
+		
+		if (originVertex == null || endVertex == null) {
+			return new Stack<>();
+		}
+		
+		// BFS ile en kısa yolu bul, ama aynı uzunluktaki yollar arasından
+		// en yüksek toplam ağırlığa sahip olanı seç
+		
+		// Her vertex için: [distance, totalWeight, predecessor]
+		HashMap<Vertex, PathInfo> pathInfoMap = new HashMap<>();
+		Queue<Vertex> queue = new LinkedList<>();
+		
+		// Origin için başlangıç değerleri
+		pathInfoMap.put(originVertex, new PathInfo(0, 0, null));
+		queue.add(originVertex);
+		originVertex.visit();
+		
+		while (!queue.isEmpty()) {
+			Vertex current = queue.remove();
+			PathInfo currentInfo = pathInfoMap.get(current);
+			
+			Iterator<Vertex> neighbors = current.getNeighborIterator();
+			while (neighbors.hasNext()) {
+				Vertex neighbor = neighbors.next();
+				int edgeWeight = getActualEdgeWeight(current, neighbor);
+				
+				int newDistance = currentInfo.distance + 1;
+				int newTotalWeight = currentInfo.totalWeight + edgeWeight;
+				
+				PathInfo neighborInfo = pathInfoMap.get(neighbor);
+				
+				if (neighborInfo == null) {
+					// İlk kez ulaşıyoruz
+					pathInfoMap.put(neighbor, new PathInfo(newDistance, newTotalWeight, current));
+					if (!neighbor.isVisited()) {
+						neighbor.visit();
+						queue.add(neighbor);
+					}
+				} else {
+					// Daha önce ulaşılmış
+					// Eğer daha kısa yol bulduysak veya aynı mesafede ama daha yüksek ağırlıkla ulaşıyorsak güncelle
+					if (newDistance < neighborInfo.distance) {
+						// Daha kısa yol bulduk
+						neighborInfo.distance = newDistance;
+						neighborInfo.totalWeight = newTotalWeight;
+						neighborInfo.predecessor = current;
+						queue.add(neighbor);
+					} else if (newDistance == neighborInfo.distance && newTotalWeight > neighborInfo.totalWeight) {
+						// Aynı uzunlukta ama daha yüksek ağırlıklı yol
+						neighborInfo.totalWeight = newTotalWeight;
+						neighborInfo.predecessor = current;
+					}
+				}
+			}
+		}
+		
+		// Yolu geri inşa et
+		Stack<String> path = new Stack<>();
+		PathInfo endInfo = pathInfoMap.get(endVertex);
+		
+		if (endInfo != null && endInfo.predecessor != null) {
+			Vertex current = endVertex;
+			while (current != null) {
+				path.push(current.getName());
+				PathInfo info = pathInfoMap.get(current);
+				current = info.predecessor;
+			}
+		} else if (originVertex.equals(endVertex)) {
+			path.push(originVertex.getName());
+		}
+		
+		return path;
+	}
+
+	// Edge'in gerçek ağırlığını döndür (1000-weight değil!)
+	private int getActualEdgeWeight(Vertex source, Vertex destination) {
+		for (Edge edge : source.getEdges()) {
+			if (edge.getDestination().equals(destination)) {
+				return edge.getWeight();
+			}
+		}
+		return 0;
+	}
+
+	// PathInfo sınıfı - her vertex için yol bilgisini tutar
+	private class PathInfo {
+		int distance;        // Kaç edge uzaklıkta
+		int totalWeight;     // Toplam edge ağırlığı
+		Vertex predecessor;  // Önceki vertex
+		
+		public PathInfo(int distance, int totalWeight, Vertex predecessor) {
+			this.distance = distance;
+			this.totalWeight = totalWeight;
+			this.predecessor = predecessor;
+		}
+	}
+
+	// ============ GRAPH METRICS ============
+
+	// 1. Edge Count
+	public int getEdgeCount() {
+		int totalEdges = 0;
+		for (Vertex v : vertices.values()) {
+			totalEdges += v.getEdges().size();
+		}
+		return totalEdges;
+	}
+
+	// 2. Average Degree (out-degree için)
+	public double getAverageDegree() {
+		if (vertices.isEmpty()) {
+			return 0.0;
+		}
+		return (double) getEdgeCount() / vertices.size();
+	}
+
+	// 3. Diameter - Grafın çapı (en uzun en kısa yol)
+	public int getDiameter() {
+		int diameter = 0;
+		
+		// Her vertex için BFS yaparak en uzun en kısa yolu bul
+		for (Vertex source : vertices.values()) {
+			resetVertices();
+			int maxDistance = getMaxDistanceFrom(source);
+			if (maxDistance > diameter && maxDistance != Integer.MAX_VALUE) {
+				diameter = maxDistance;
+			}
+		}
+		
+		return diameter;
+	}
+
+	// Bir vertex'ten diğer tüm vertex'lere en uzak mesafeyi bulur
+	private int getMaxDistanceFrom(Vertex source) {
+		Queue<Vertex> queue = new LinkedList<>();
+		source.visit();
+		source.setCost(0);
+		queue.add(source);
+		
+		int maxDistance = 0;
+		
+		while (!queue.isEmpty()) {
+			Vertex current = queue.remove();
+			Iterator<Vertex> neighbors = current.getNeighborIterator();
+			
+			while (neighbors.hasNext()) {
+				Vertex neighbor = neighbors.next();
+				if (!neighbor.isVisited()) {
+					neighbor.visit();
+					neighbor.setCost(current.getCost() + 1);
+					queue.add(neighbor);
+					
+					if (neighbor.getCost() > maxDistance) {
+						maxDistance = (int) neighbor.getCost();
+					}
+				}
+			}
+		}
+		
+		return maxDistance;
+	}
+
+	// 4. Reciprocity - Karşılıklı bağlantı oranı
+	public double getReciprocity() {
+		int reciprocalEdges = 0;
+		int totalEdges = 0;
+		
+		// Her edge için karşılığının olup olmadığını kontrol et
+		for (Vertex v : vertices.values()) {
+			for (Edge edge : v.getEdges()) {
+				totalEdges++;
+				Vertex destination = edge.getDestination();
+				
+				// Destination'dan source'a geri bir edge var mı kontrol et
+				if (destination.hasEdge(v.getName())) {
+					reciprocalEdges++;
+				}
+			}
+		}
+		
+		if (totalEdges == 0) {
+			return 0.0;
+		}
+		
+		// Her reciprocal çift iki kez sayıldığı için toplam reciprocal edges / total edges
+		return (double) reciprocalEdges / totalEdges;
+	}
 }
-
-private double getEdgeWeight(Vertex source, Vertex destination) {
-    for (Edge edge : source.getEdges()) {
-        if (edge.getDestination().equals(destination)) {
-            return 1000 - edge.getWeight(); //  most confidentı bulmak için chepast pathta 1000 den çıkarınca küçük değerler most confident olmuş oldu.  
-        }
-    }
-    return Double.MAX_VALUE;
-}
-
-// Inner class for priority queue entries
-private class EntryPQ {
-    Vertex vertex;
-    double cost;
-    Vertex predecessor;
-    
-    public EntryPQ(Vertex vertex, double cost, Vertex predecessor) {
-        this.vertex = vertex;
-        this.cost = cost;
-        this.predecessor = predecessor;
-    }
-}
-
-public int getEdgeCount() {
-    int totalEdges = 0;
-    for (Vertex v : vertices.values()) {
-        totalEdges += v.getEdges().size();
-    }
-    return totalEdges;
-}
-
-// 2. Average Degree (out-degree için)
-public double getAverageDegree() {
-    if (vertices.isEmpty()) {
-        return 0.0;
-    }
-    return (double) getEdgeCount() / vertices.size();
-}
-
-}
-
-
