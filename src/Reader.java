@@ -11,6 +11,7 @@ public class Reader {
         this.infoFilepath = infoFilepath;
     }
 
+    // Belirtilen ağırlık eşiğine göre yönlendirilmiş grafiği dosyadan yükler
     public DirectedGraph loadGraph(int threshold) throws IOException{
         DirectedGraph graph = new DirectedGraph();
         try (BufferedReader reader = new BufferedReader(new FileReader(linkFilepath))) {
@@ -29,6 +30,7 @@ public class Reader {
         return graph;
     }
 
+    // Protein bilgilerini dosyadan yükler
     public List<String[]> loadProteinInfo() throws IOException {
         List<String[]> proteinInfoList = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(infoFilepath))) {
@@ -41,4 +43,5 @@ public class Reader {
         }
         return proteinInfoList;
     } 
+    
 }// end reader

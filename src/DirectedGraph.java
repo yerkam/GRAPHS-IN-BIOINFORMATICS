@@ -8,7 +8,7 @@ public class DirectedGraph {
 		this.vertices = new HashMap<>();
 	}
 
-	public void addEdge(String source, String destination, int weight) {
+	public void addEdge(String source, String destination, int weight) { // Yönlü bir edge ekle
 
 		Vertex source_v = vertices.get(source);
 		Vertex destination_v = vertices.get(destination);
@@ -34,7 +34,7 @@ public class DirectedGraph {
 		edgeCount++;
 	}
 
-	public void print() {
+	public void print() { // Grafın tüm vertexlerini ve komşularını yazdır
 
 		for (Vertex v : vertices.values()) {
 			System.out.print(v.getName() + " -> ");
@@ -49,15 +49,15 @@ public class DirectedGraph {
 		}
 	}
 
-	public Iterable<Vertex> vertices() {
+	public Iterable<Vertex> vertices() { // Grafın tüm vertexlerini döndür
 		return vertices.values();
 	}
 
-	public int size() {
+	public int size() { // Grafın vertex sayısını döndür
 		return vertices.size();
 	}
 
-	private void resetVertices() {
+	private void resetVertices() { // Tüm vertexleri ziyaret edilmemiş olarak işaretle
 		for (Vertex v : vertices.values()) {
 			v.unvisit();
 			v.setCost(0);
@@ -65,12 +65,12 @@ public class DirectedGraph {
 		}
 	}
 
-	public void clear() {
+	public void clear() { // Grafı temizle
 		vertices.clear();
 		edgeCount = 0;
 	}
 
-	public Queue<String> getBreadthFirstTraversal(String origin)
+	public Queue<String> getBreadthFirstTraversal(String origin) // BFS ile gezinti
 	{
 		resetVertices();
 		Queue<String> traversalOrder = new LinkedList<>();
@@ -102,7 +102,7 @@ public class DirectedGraph {
 		return traversalOrder;
 	}
 
-	public Queue<String> getDepthFirstTraversal(String origin)
+	public Queue<String> getDepthFirstTraversal(String origin) // DFS ile gezinti
 	{
 		resetVertices();
 		Queue<String> traversalOrder = new LinkedList<>();
@@ -138,13 +138,9 @@ public class DirectedGraph {
 		return traversalOrder;
 	}
 
-	public boolean containsVertex(String vertexName) {
+	public boolean containsVertex(String vertexName) { // Vertex'in graf içinde olup olmadığını kontrol et
 		return vertices.containsKey(vertexName);
 	}
-		
-	public int getVertexCount() {
-    	return vertices.size();
-    }
 
 
 	public Stack<String> getCheapestPath(String origin, String end) {
@@ -253,11 +249,7 @@ public class DirectedGraph {
 
 	// 1. Edge Count
 	public int getEdgeCount() {
-		int totalEdges = 0;
-		for (Vertex v : vertices.values()) {
-			totalEdges += v.getEdges().size();
-		}
-		return totalEdges;
+		return edgeCount;
 	}
 
 	// 2. Average Degree (out-degree için)

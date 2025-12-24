@@ -1,11 +1,11 @@
 import java.util.*;
 
 public class Vertex {
-	private String name;
-	private ArrayList<Edge> edges;
-	private Vertex parent;
-	private boolean visited;  
-	private double cost;  
+	private String name; // Protein adı
+	private ArrayList<Edge> edges; // Komşu kenarlar
+	private Vertex parent; // Ebeveyn düğüm
+	private boolean visited;  // Ziyaret durumu
+	private double cost;  // Maliyet (Dijkstra için)
 
 	public Vertex(String name) {
 		this.name = name;
@@ -58,7 +58,7 @@ public class Vertex {
 		return this.visited;
 	}
 
-	public Vertex getUnvisitedNeighbor() {
+	public Vertex getUnvisitedNeighbor() { // Ziyaret edilmemiş komşuyu döndürür
 		Vertex result = null;
 
 		Iterator<Vertex> neighbors = getNeighborIterator();
@@ -72,7 +72,7 @@ public class Vertex {
 			return result;
 	}
 
-	public boolean hasEdge(String neighbor) {
+	public boolean hasEdge(String neighbor) { // Belirtilen komşuya sahip mi
 		boolean found = false;
 		Iterator<Vertex> neighbors = getNeighborIterator();
 		while (neighbors.hasNext())
@@ -88,12 +88,13 @@ public class Vertex {
 		return found;
 	}
 
-	public Iterator<Vertex> getNeighborIterator()
+	public Iterator<Vertex> getNeighborIterator() // Komşu Iteratörü döndürür
 	{
 		return new NeighborIterator();
 	} // end getNeighborIterator
 
-	private class NeighborIterator implements Iterator<Vertex>
+	// İç sınıf: Komşu Iteratörü
+	private class NeighborIterator implements Iterator<Vertex> 
 	{
 		int edgeIndex = 0;  
 		private NeighborIterator()
